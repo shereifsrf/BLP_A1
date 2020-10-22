@@ -1,12 +1,22 @@
 #include <iostream>
 #include <conio.h>
+#include <sstream>
+#include <fstream>
+#include <vector>
+#include "Tools.h"
+#include <time.h>
+#include "md5.h"
 
 using namespace std;
 
 int main(int argc, char** argv)
 {
+	//showing the MD5 test
+	cout << "MD5 (""This is a test"") = " << md5("This is a test");
+
 	//cout << argv[1];
 	//if user passed '-i' as parameter
+	#pragma region Registration Part
 	if (string(argv[1]) == "-i")
 	{
 		//cout << "inside";
@@ -14,6 +24,7 @@ int main(int argc, char** argv)
 		string userid = "";
 		string password = "";
 		string cnfPassword = "";
+		string randNumber;
 
 		int clearance;
 		int isValidateOK = 0;
@@ -33,6 +44,7 @@ int main(int argc, char** argv)
 		//promt user to type password
 		while (!isOk)
 		{
+			password = "";
 			cout << "Password: ";
 			key = _getch();
 
@@ -91,6 +103,7 @@ int main(int argc, char** argv)
 
 		while (!isOk)
 		{
+			cnfPassword = "";
 			cout << "Confirm Password: ";
 			key = _getch();
 
@@ -129,21 +142,78 @@ int main(int argc, char** argv)
 				cout << "Clearance must be within 0-3";
 				cout << endl;
 				isOk = 0;
+				continue;
 			}
+			isOk = 1;
 		}
 
 		//create salt for the user (8 digits random generate)
-		//save the data in salt.txt as <userid:salt>
+		//read the file and check whether the user already existing
+		string saltFile = "salt.txt";
+		string shadowFile = "shadow.txt";
+
+		vector<string> lineVector = ReadAFile(saltFile);
+
+		for (string str : lineVector)
+		{
+			vector <string> stringLineArr = tokenizeString(str, ":");
+
+			if (stringLineArr[0] == userid)
+			{
+				isOk = 0;
+				break;
+			}
+		}
+
+		if (!isOk)
+		{
+			cout << "User already exists";
+			cout << endl;
+		}
+		else
+		{
+			// generate a random 8 digit number for salt
+			srand(time(NULL));
+
+			for (int i = 0; i < 8; i++)
+			{
+				int num = rand() % 9 + 1;
+
+				randNumber += to_string(num);
+			}
+
+			//store the data in the salt file
+			//save the data in salt.txt as <userid:salt>
+			ofstream out(saltFile);
+			out << userid << ":" << randNumber << endl;
+			out.close();
+		}
+
+
 
 		//generate MD5 digest in a format such as <paassword><saltNumber>
+		string md5Input = password + randNumber;
+		string md5Output;
+		md5Output = md5(md5Input);
+		
 		//save the data in shadow file as <userid:salthash:securityclearance>
+		ofstream outS(shadowFile);
+		outS << userid << ":" << md5Output << ":" << clearance << endl;
+		outS.close();
+		
 
+	#pragma endregion 
 	}
 	//user want sto login
 	else
 	{
-		cout << "outside";
-		//read the file.store file
+	#pragma region Logging in Part
+	
+	//load the file.store
+
+	//prompt 
+
+	#pragma endregion
 
 	}
 }
