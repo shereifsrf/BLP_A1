@@ -11,17 +11,15 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-	//showing the MD5 test
-	cout << "MD5 (""This is a test"") = " << md5("This is a test");
 
 	//cout << argv[1];
 	//if user passed '-i' as parameter
-	#pragma region Registration Part
-	if (string(argv[1]) == "-i")
+#pragma region Registration Part
+	if (argc > 1 && string(argv[1]) == "-i")
 	{
 		//cout << "inside";
 
-		string userid = "";
+		string username = "";
 		string password = "";
 		string cnfPassword = "";
 		string randNumber;
@@ -36,7 +34,7 @@ int main(int argc, char** argv)
 
 		//prompt user to type username
 		cout << "Username: ";
-		cin >> userid;
+		cin >> username;
 		cout << endl;
 
 		//check whether the user already exist in the file
@@ -151,24 +149,15 @@ int main(int argc, char** argv)
 		//read the file and check whether the user already existing
 		string saltFile = "salt.txt";
 		string shadowFile = "shadow.txt";
+		string saltValue;
 
-		vector<string> lineVector = ReadAFile(saltFile);
+		saltValue = findUsernameExists(saltFile, username);
 
-		for (string str : lineVector)
-		{
-			vector <string> stringLineArr = tokenizeString(str, ":");
-
-			if (stringLineArr[0] == userid)
-			{
-				isOk = 0;
-				break;
-			}
-		}
-
-		if (!isOk)
+		if (saltValue != "")
 		{
 			cout << "User already exists";
 			cout << endl;
+			return 0;
 		}
 		else
 		{
@@ -183,9 +172,9 @@ int main(int argc, char** argv)
 			}
 
 			//store the data in the salt file
-			//save the data in salt.txt as <userid:salt>
-			ofstream out(saltFile);
-			out << userid << ":" << randNumber << endl;
+			//save the data in salt.txt as <username:salt>
+			ofstream out(saltFile, ios_base::app);
+			out << username << ":" << randNumber << endl;
 			out.close();
 		}
 
@@ -195,25 +184,135 @@ int main(int argc, char** argv)
 		string md5Input = password + randNumber;
 		string md5Output;
 		md5Output = md5(md5Input);
-		
-		//save the data in shadow file as <userid:salthash:securityclearance>
-		ofstream outS(shadowFile);
-		outS << userid << ":" << md5Output << ":" << clearance << endl;
-		outS.close();
-		
 
-	#pragma endregion 
+		//save the data in shadow file as <username:salthash:securityclearance>
+		ofstream outS(shadowFile, ios_base::app);
+		outS << username << ":" << md5Output << ":" << clearance << endl;
+		outS.close();
+
+
+#pragma endregion 
 	}
 	//user want sto login
 	else
 	{
-	#pragma region Logging in Part
-	
-	//load the file.store
 
-	//prompt 
+		//showing the MD5 test
+		cout << "MD5 (""This is a test"") = " << md5("This is a test") << endl;
 
-	#pragma endregion
+#pragma region Logging in Part
+
+		string username = "";
+		string password = "";
+		string saltValue;
+		string hashValue;
+
+		int isOk;
+		int clearance;
+
+		//structure for the files.store file
+		struct MyStruct
+		{
+			string filename;
+			string username;
+			int clearance;
+			string status;
+		};
+
+		//load the files.store
+		string saltFile = "salt.txt";
+		string shadowFile = "shadow.txt";
+		string filesStore = "files.store";
+
+		char key;
+
+		HashNClearance hNCStruct;
+
+		vector<string> lineVector = ReadAFile(filesStore);
+		vector <MyStruct> filesVector;
+
+		for (string str : lineVector)
+		{
+			vector <string> stringLineArr = tokenizeString(str, ":");
+
+			filesVector.push_back({ stringLineArr[0], stringLineArr[1], stoi(stringLineArr[2]), "exisiting" });
+		}
+
+		/*for (int i = 0; i < filesVector.size(); i++)
+		{
+			cout << filesVector[i].filename << filesVector[i].username << filesVector[i].clearance << filesVector[i].status;
+		}*/
+
+		//prompt username and password
+		cout << "Username: ";
+		cin >> username;
+		cout << endl;
+
+		password = "";
+		cout << "Password: ";
+		key = _getch();
+
+		while (key != '\r')
+		{
+			password += key;
+			cout << "*";
+			key = _getch();
+		}
+		cout << endl;
+
+		//use md5 and check whether the username is valid and password is correct
+		//check whether user exists in the salt.txt
+		saltValue = findUsernameExists(saltFile, username);
+
+		if (saltValue != "")
+		{
+			cout << username << " found in the salt.txt" << endl;
+
+			//get the salt value
+			cout << "salt retrieved: " << saltValue << endl;
+
+			//hash the value and show it
+			string md5Input = password + saltValue;
+			string md5Output;
+
+			cout << "hashing ..." << endl;
+
+			md5Output = md5(md5Input);
+
+			hNCStruct = getHashValue("shadow.txt", username);
+
+			hashValue = hNCStruct.hash;
+			clearance = hNCStruct.clearance;
+
+			cout << "hash value: " << hashValue << endl;
+
+			//check whether user password is correct
+			if (hashValue == md5Output)
+			{
+				cout << "Authentication for user " << username << " complete" << endl;
+				cout << "The clearance for " << username << " is " << clearance << endl << endl;
+
+				//show the options after successfull login
+				cout << "Options: (C)reatem (A)ppend, (R)ead, (W)rite, (L), (S)ave or (E)xit" << endl;
+
+			}
+			else
+			{
+				cout << "User password is not correct!!" << endl;
+				return 0;
+			}
+
+
+		}
+		else
+		{
+			cout << " (Username not found)";
+			return 0;
+		}
+
+
+
+#pragma endregion
 
 	}
 }
