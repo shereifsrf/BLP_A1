@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 		//promt user to type password
 		cout << "password: ";
 		cin >> userid;
-		cout << endl; //checking
+		cout << endl; //checking again
 
 		//validate user typed password whether contains atleast character, one Upper case and a Digit
 		//prompt user to type confirm password and validate match
