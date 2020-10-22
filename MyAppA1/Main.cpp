@@ -9,6 +9,23 @@
 
 using namespace std;
 
+void options(string, int);
+
+//structure for the files.store file
+struct MyStruct
+{
+	string filename;
+	string username;
+	int clearance;
+	string status;
+};
+
+vector <MyStruct> filesVector;
+
+string saltFile = "salt.txt";
+string shadowFile = "shadow.txt";
+string filesStore = "files.store";
+
 int main(int argc, char** argv)
 {
 
@@ -147,8 +164,6 @@ int main(int argc, char** argv)
 
 		//create salt for the user (8 digits random generate)
 		//read the file and check whether the user already existing
-		string saltFile = "salt.txt";
-		string shadowFile = "shadow.txt";
 		string saltValue;
 
 		saltValue = findUsernameExists(saltFile, username);
@@ -210,26 +225,11 @@ int main(int argc, char** argv)
 		int isOk;
 		int clearance;
 
-		//structure for the files.store file
-		struct MyStruct
-		{
-			string filename;
-			string username;
-			int clearance;
-			string status;
-		};
-
-		//load the files.store
-		string saltFile = "salt.txt";
-		string shadowFile = "shadow.txt";
-		string filesStore = "files.store";
-
 		char key;
 
 		HashNClearance hNCStruct;
 
 		vector<string> lineVector = ReadAFile(filesStore);
-		vector <MyStruct> filesVector;
 
 		for (string str : lineVector)
 		{
@@ -292,8 +292,7 @@ int main(int argc, char** argv)
 				cout << "Authentication for user " << username << " complete" << endl;
 				cout << "The clearance for " << username << " is " << clearance << endl << endl;
 
-				//show the options after successfull login
-				cout << "Options: (C)reatem (A)ppend, (R)ead, (W)rite, (L), (S)ave or (E)xit" << endl;
+				options(username, clearance);
 
 			}
 			else
@@ -314,5 +313,110 @@ int main(int argc, char** argv)
 
 #pragma endregion
 
+	}
+}
+
+void options(string username, int clearance)
+{
+	char key;
+	int isOk = 0;
+	int isFileExist = 0;
+	int fileClearance;
+	
+	string userFilename;
+
+	//show the options after successfull login
+	while (!isOk)
+	{
+		isFileExist = 0;
+
+		cout << "Options: (C)reate, (A)ppend, (R)ead, (W)rite, (L)ist, (S)ave or (E)xit" << endl;
+
+		cin >> key;
+		switch (key)
+		{
+		case 'C':
+			//prompt user to type filename
+			cout << "Filename: ";
+			cin >> userFilename;
+			cout << endl;
+
+			//check wether the file alrready in the files.store
+			for (int i = 0; i < filesVector.size(); i++)
+			{
+				if (filesVector[i].filename == userFilename)
+				{
+					cout << "File Already exists!" << endl;
+					isFileExist = 1;
+					break;
+				}
+			}
+
+			//save the filename with username and user clearance level in files.store
+			if (isFileExist == 0)
+			{
+				ofstream outF(filesStore, ios_base::app);
+				outF << userFilename << ":" << username << ":" << clearance << endl;
+				outF.close();
+
+				cout << "Security Level of user " << username << " is " << clearance << ". File added to list!" << endl;
+
+			}
+			break;
+
+		case 'A':
+			//prompt user to type the filename
+			cout << "Filename: ";
+			cin >> userFilename;
+			cout << endl;
+
+			//check wether the file exists
+			for (int i = 0; i < filesVector.size(); i++)
+			{
+				if (filesVector[i].filename == userFilename)
+				{
+					//cout << "File Already exists!" << endl;
+					isFileExist = 1;
+					fileClearance = filesVector[i].clearance;
+					break;
+				}
+			}
+
+			//check the clearance level of the user and the file
+			if (isFileExist == 1)
+			{
+
+
+			}
+			else
+			{
+				cout << "File does not exists!" << endl;
+			}
+
+			break;
+		case 'R':
+			//prompt user to type the filename
+
+			//check wether the file exists
+
+			//check the clearance level of the user and the file
+			break;
+		case 'W':
+			//prompt user to type the filename
+
+			//check wether the file exists
+
+			//check the clearance level of the user and the file
+			break;
+		case 'L':
+			//List the files from the files.store
+			break;
+		case 'S':
+			//save if anyfile has been added
+			break;
+		case 'E':
+			//ask user whether user would like to shut down filesystem
+			break;
+		}
 	}
 }
