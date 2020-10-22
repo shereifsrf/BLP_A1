@@ -355,9 +355,7 @@ void options(string username, int clearance)
 			//save the filename with username and user clearance level in files.store
 			if (isFileExist == 0)
 			{
-				ofstream outF(filesStore, ios_base::app);
-				outF << userFilename << ":" << username << ":" << clearance << endl;
-				outF.close();
+				filesVector.push_back({ userFilename, username, clearance, "New" });
 
 				cout << "Security Level of user " << username << " is " << clearance << ". File added to list!" << endl;
 
@@ -385,7 +383,14 @@ void options(string username, int clearance)
 			//check the clearance level of the user and the file
 			if (isFileExist == 1)
 			{
-
+				if (clearance == fileClearance)
+				{
+					cout << "user " << username << " with clearance of " << clearance << " has appended file " << userFilename << " having clearance of " << fileClearance << endl;
+				}
+				else
+				{
+					cout << "user " << username << " with clearance of " << clearance << " does not have access to append file " << userFilename << " having clearance of " << fileClearance << endl;
+				}
 
 			}
 			else
@@ -396,26 +401,106 @@ void options(string username, int clearance)
 			break;
 		case 'R':
 			//prompt user to type the filename
+			cout << "Filename: ";
+			cin >> userFilename;
+			cout << endl;
 
 			//check wether the file exists
+			for (int i = 0; i < filesVector.size(); i++)
+			{
+				if (filesVector[i].filename == userFilename)
+				{
+					//cout << "File Already exists!" << endl;
+					isFileExist = 1;
+					fileClearance = filesVector[i].clearance;
+					break;
+				}
+			}
 
 			//check the clearance level of the user and the file
+			if (isFileExist == 1)
+			{
+				if (clearance >= fileClearance)
+				{
+					cout << "user " << username << " with clearance of " << clearance << " has read file " << userFilename << " having clearance of " << fileClearance << endl;
+				}
+				else
+				{
+					cout << "user " << username << " with clearance of " << clearance << " does not have access to read file " << userFilename << " having clearance of " << fileClearance << endl;
+				}
+
+			}
+			else
+			{
+				cout << "File does not exists!" << endl;
+			}
 			break;
 		case 'W':
 			//prompt user to type the filename
+			cout << "Filename: ";
+			cin >> userFilename;
+			cout << endl;
 
 			//check wether the file exists
+			for (int i = 0; i < filesVector.size(); i++)
+			{
+				if (filesVector[i].filename == userFilename)
+				{
+					//cout << "File Already exists!" << endl;
+					isFileExist = 1;
+					fileClearance = filesVector[i].clearance;
+					break;
+				}
+			}
 
 			//check the clearance level of the user and the file
+			if (isFileExist == 1)
+			{
+				if (clearance <= fileClearance)
+				{
+					cout << "user " << username << " with clearance of " << clearance << " has written file " << userFilename << " having clearance of " << fileClearance << endl;
+				}
+				else
+				{
+					cout << "user " << username << " with clearance of " << clearance << " does not have access to write file " << userFilename << " having clearance of " << fileClearance << endl;
+				}
+
+			}
+			else
+			{
+				cout << "File does not exists!" << endl;
+			}
 			break;
 		case 'L':
 			//List the files from the files.store
+			for (int i = 0; i < filesVector.size(); i++)
+			{
+				cout << filesVector[i].filename << endl;
+			}
 			break;
 		case 'S':
 			//save if anyfile has been added
+			for (int i = 0; i < filesVector.size(); i++)
+			{
+				if (filesVector[i].status == "New")
+				{
+					ofstream outG(filesStore, ios_base::app);
+					outG << filesVector[i].filename << ":" << filesVector[i].username << ":" << filesVector[i].clearance << endl;
+					outG.close();
+
+					cout << "file " << filesVector[i].filename << " has been saved!" << endl;
+				}
+			}
 			break;
 		case 'E':
 			//ask user whether user would like to shut down filesystem
+			cout << "Shut down the FileSystem? (Y)es or (N)o: ";
+			cin >> key;
+
+			if (key == 'Y')
+			{
+				isOk = 1;
+			}
 			break;
 		}
 	}
