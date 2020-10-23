@@ -58,6 +58,16 @@ int main(int argc, char** argv)
 		cout << endl;
 
 		//check whether the user already exist in the file
+		string saltValue1;
+
+		saltValue1 = findUsernameExists(saltFile, username);
+
+		if (saltValue1 != "")
+		{
+			cout << "User already exists";
+			cout << endl;
+			return 0;
+		}
 
 		//promt user to type password
 		while (!isOk)
@@ -155,7 +165,7 @@ int main(int argc, char** argv)
 			cin.ignore();
 			cout << endl;
 
-			if (clearance < 0 && clearance > 3)
+			if (clearance < 0 || clearance > 3)
 			{
 				cout << "Clearance must be within 0-3";
 				cout << endl;
