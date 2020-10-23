@@ -1,8 +1,8 @@
 ﻿  Main.cpp
-C:\Users\Shereif\Dropbox\Term 5\CSCI262 System Security\Assignments\A1\MyAppA1_ShereifWorking\MyAppA1\Main.cpp(180,14): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\Shereif\Dropbox\Term 5\CSCI262 System Security\Assignments\A1\MyApp\MyAppA1\Main.cpp(180,14): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   md5.cpp
-C:\Users\Shereif\Dropbox\Term 5\CSCI262 System Security\Assignments\A1\MyAppA1_ShereifWorking\MyAppA1\Main.cpp(225,7): warning C4101: 'isOk': unreferenced local variable
+C:\Users\Shereif\Dropbox\Term 5\CSCI262 System Security\Assignments\A1\MyApp\MyAppA1\Main.cpp(225,7): warning C4101: 'isOk': unreferenced local variable
   Tools.cpp
   Generating Code...
-C:\Users\Shereif\Dropbox\Term 5\CSCI262 System Security\Assignments\A1\MyAppA1_ShereifWorking\MyAppA1\md5.cpp(114,36): warning C4267: 'argument': conversion from 'size_t' to 'MD5::size_type', possible loss of data
-  MyAppA1.vcxproj -> C:\Users\Shereif\Dropbox\Term 5\CSCI262 System Security\Assignments\A1\MyAppA1_ShereifWorking\x64\Debug\MyAppA1.exe
+C:\Users\Shereif\Dropbox\Term 5\CSCI262 System Security\Assignments\A1\MyApp\MyAppA1\md5.cpp(114,36): warning C4267: 'argument': conversion from 'size_t' to 'MD5::size_type', possible loss of data
+  MyAppA1.vcxproj -> C:\Users\Shereif\Dropbox\Term 5\CSCI262 System Security\Assignments\A1\MyApp\x64\Debug\MyAppA1.exe

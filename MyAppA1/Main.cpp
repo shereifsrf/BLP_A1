@@ -1,6 +1,8 @@
 #include <iostream>
-#include <conio.h>
 #include <sstream>
+#include <string>
+#include <termios.h>
+#include <unistd.h>
 #include <fstream>
 #include <vector>
 #include "Tools.h"
@@ -52,6 +54,7 @@ int main(int argc, char** argv)
 		//prompt user to type username
 		cout << "Username: ";
 		cin >> username;
+		cin.ignore();
 		cout << endl;
 
 		//check whether the user already exist in the file
@@ -59,17 +62,17 @@ int main(int argc, char** argv)
 		//promt user to type password
 		while (!isOk)
 		{
+
 			password = "";
 			cout << "Password: ";
-			key = _getch();
-
-			while (key != '\r')
-			{
-				password += key;
-				cout << "*";
-				key = _getch();
-			}
-			//cout << endl << password; 
+			termios oldt;
+			tcgetattr(STDIN_FILENO, &oldt);
+			termios newt = oldt;
+			newt.c_lflag &= ~ECHO;
+			tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+			getline(cin, password);
+			tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+			//cout << endl << password;
 
 			//validate user typed password whether contains atleast character, one Upper case and a Digit
 			if (password.length() >= 8)
@@ -120,14 +123,13 @@ int main(int argc, char** argv)
 		{
 			cnfPassword = "";
 			cout << "Confirm Password: ";
-			key = _getch();
-
-			while (key != '\r')
-			{
-				cnfPassword += key;
-				cout << "*";
-				key = _getch();
-			}
+			termios oldt;
+			tcgetattr(STDIN_FILENO, &oldt);
+			termios newt = oldt;
+			newt.c_lflag &= ~ECHO;
+			tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+			getline(cin, cnfPassword);
+			tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 
 			if (password == cnfPassword)
 			{
@@ -150,6 +152,7 @@ int main(int argc, char** argv)
 		{
 			cout << "User Clearance (0-3): ";
 			cin >> clearance;
+			cin.ignore();
 			cout << endl;
 
 			if (clearance < 0 && clearance > 3)
@@ -206,7 +209,7 @@ int main(int argc, char** argv)
 		outS.close();
 
 
-#pragma endregion 
+#pragma endregion
 	}
 	//user want sto login
 	else
@@ -246,19 +249,19 @@ int main(int argc, char** argv)
 		//prompt username and password
 		cout << "Username: ";
 		cin >> username;
+		cin.ignore();
 		cout << endl;
 
 		password = "";
 		cout << "Password: ";
-		key = _getch();
-
-		while (key != '\r')
-		{
-			password += key;
-			cout << "*";
-			key = _getch();
-		}
+		termios oldt;
+		tcgetattr(STDIN_FILENO, &oldt);
+		termios newt = oldt;
+		newt.c_lflag &= ~ECHO;
+		tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+		getline(cin, password);
 		cout << endl;
+		tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 
 		//use md5 and check whether the username is valid and password is correct
 		//check whether user exists in the salt.txt
@@ -322,7 +325,7 @@ void options(string username, int clearance)
 	int isOk = 0;
 	int isFileExist = 0;
 	int fileClearance;
-	
+
 	string userFilename;
 
 	//show the options after successfull login
@@ -339,6 +342,7 @@ void options(string username, int clearance)
 			//prompt user to type filename
 			cout << "Filename: ";
 			cin >> userFilename;
+			cin.ignore();
 			cout << endl;
 
 			//check wether the file alrready in the files.store
@@ -366,6 +370,7 @@ void options(string username, int clearance)
 			//prompt user to type the filename
 			cout << "Filename: ";
 			cin >> userFilename;
+			cin.ignore();
 			cout << endl;
 
 			//check wether the file exists
@@ -403,6 +408,7 @@ void options(string username, int clearance)
 			//prompt user to type the filename
 			cout << "Filename: ";
 			cin >> userFilename;
+			cin.ignore();
 			cout << endl;
 
 			//check wether the file exists
@@ -439,6 +445,7 @@ void options(string username, int clearance)
 			//prompt user to type the filename
 			cout << "Filename: ";
 			cin >> userFilename;
+			cin.ignore();
 			cout << endl;
 
 			//check wether the file exists
@@ -496,6 +503,7 @@ void options(string username, int clearance)
 			//ask user whether user would like to shut down filesystem
 			cout << "Shut down the FileSystem? (Y)es or (N)o: ";
 			cin >> key;
+			cin.ignore();
 
 			if (key == 'Y')
 			{
@@ -505,3 +513,8 @@ void options(string username, int clearance)
 		}
 	}
 }
+
+
+
+
+
